@@ -41,9 +41,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          key: python-${{ matrix.python-version }}-${{ runner.os }}-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
-            ${{ runner.os }}-pip-
+            python-${{ runner.os }}-
       
       - name: Install dependencies
         run: |
@@ -53,12 +53,13 @@ jobs:
       - name: Run tests with Pytest
         env:
           DATABASE_URL: postgresql+asyncpg://user:password@127.0.0.1:5432/myappdb # Use localhost for Postgres
-        run: pytest
+        run: |
+          python --version
+          pytest
 
   build-and-push-docker:
     needs: test
     runs-on: ubuntu-latest
-    environment: production
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -76,15 +77,15 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: kaw393939/wis_club_api:${{ github.sha }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/event_manager:${{ github.sha }}
           platforms: linux/amd64,linux/arm64 # Multi-platform builds
-          cache-from: type=registry,ref=kaw393939/wis_club_api:cache
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/event_manager:cache
           cache-to: type=inline,mode=max
           
       - name: Scan the Docker image
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: kaw393939/wis_club_api:${{ github.sha }}
+          image-ref: ${{ secrets.DOCKERHUB_USERNAME }}/event_manager:${{ github.sha }}
           format: 'table'
           exit-code: 1 # Fail the job if vulnerabilities are found
           ignore-unfixed: true
