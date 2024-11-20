@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.10] # Use a stable Python version
+        python-version: [3.11] # Use a stable Python versionx
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
