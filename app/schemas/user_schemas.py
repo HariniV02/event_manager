@@ -27,31 +27,31 @@ def validate_url(url: Optional[str]) -> Optional[str]:
 
 
 class UserBase(BaseModel):
-    email: EmailStr = Field(..., example="johndoe@example.com")
+    email: EmailStr = Field(..., example="janedoe@example.com")
     username: Optional[str] = Field(
         None,
         min_length=3,
         max_length=30,
         pattern=r'^[a-zA-Z0-9_.-]+$',
-        example="john_doe",
+        example="jane_doe",
     )
     nickname: Optional[str] = Field(
         None, min_length=3, pattern=r'^[\w-]+$', example=generate_nickname()
     )
-    first_name: Optional[str] = Field(None, example="John")
+    first_name: Optional[str] = Field(None, example="Jane")
     last_name: Optional[str] = Field(None, example="Doe")
     bio: Optional[str] = Field(
         None,
         example="Experienced software developer specializing in web applications.",
     )
     profile_picture_url: Optional[str] = Field(
-        None, example="https://example.com/profiles/john.jpg"
+        None, example="https://example.com/profiles/jane.jpg"
     )
     linkedin_profile_url: Optional[str] = Field(
-        None, example="https://linkedin.com/in/johndoe"
+        None, example="https://linkedin.com/in/janedoe"
     )
     github_profile_url: Optional[str] = Field(
-        None, example="https://github.com/johndoe"
+        None, example="https://github.com/janedoe"
     )
 
     _validate_urls = validator(
@@ -67,36 +67,36 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    email: EmailStr = Field(..., example="johndoe@example.com")
+    email: EmailStr = Field(..., example="janedoe@example.com")
     password: str = Field(..., example="Secure*1234")
 
 
 class UserUpdate(UserBase):
-    email: Optional[EmailStr] = Field(None, example="johndoe@example.com")
+    email: Optional[EmailStr] = Field(None, example="janedoe@example.com")
     username: Optional[str] = Field(
         None,
         min_length=3,
         max_length=30,
         pattern=r'^[a-zA-Z0-9_.-]+$',
-        example="john_doe",
+        example="jane_doe",
     )
     nickname: Optional[str] = Field(
-        None, min_length=3, pattern=r'^[\w-]+$', example="john_doe123"
+        None, min_length=3, pattern=r'^[\w-]+$', example="jane_doe123"
     )
-    first_name: Optional[str] = Field(None, example="John")
+    first_name: Optional[str] = Field(None, example="Jane")
     last_name: Optional[str] = Field(None, example="Doe")
     bio: Optional[str] = Field(
         None,
         example="Experienced software developer specializing in web applications.",
     )
     profile_picture_url: Optional[str] = Field(
-        None, example="https://example.com/profiles/john.jpg"
+        None, example="https://example.com/profiles/jane.jpg"
     )
     linkedin_profile_url: Optional[str] = Field(
-        None, example="https://linkedin.com/in/johndoe"
+        None, example="https://linkedin.com/in/janedoe"
     )
     github_profile_url: Optional[str] = Field(
-        None, example="https://github.com/johndoe"
+        None, example="https://github.com/janedoe"
     )
 
     @root_validator(pre=True)
@@ -110,13 +110,13 @@ class UserUpdate(UserBase):
 class UserResponse(UserBase):
     id: uuid.UUID = Field(..., example=uuid.uuid4())
     role: UserRole = Field(default=UserRole.AUTHENTICATED, example="AUTHENTICATED")
-    email: EmailStr = Field(..., example="johndoe@example.com")
+    email: EmailStr = Field(..., example="janedoe@example.com")
     username: Optional[str] = Field(
         None,
         min_length=3,
         max_length=30,
         pattern=r'^[a-zA-Z0-9_.-]+$',
-        example="john_doe",
+        example="jane_doe",
     )
     nickname: Optional[str] = Field(
         None, min_length=3, pattern=r'^[\w-]+$', example=generate_nickname()
@@ -125,7 +125,7 @@ class UserResponse(UserBase):
 
 
 class LoginRequest(BaseModel):
-    email: str = Field(..., example="johndoe@example.com")
+    email: str = Field(..., example="janedoe@example.com")
     password: str = Field(..., example="Secure*1234")
 
 
@@ -142,16 +142,16 @@ class UserListResponse(BaseModel):
         example=[
             {
                 "id": uuid.uuid4(),
-                "username": "john_doe",
+                "username": "jane_doe",
                 "nickname": generate_nickname(),
-                "email": "johndoe@example.com",
-                "first_name": "John",
+                "email": "janedoe@example.com",
+                "first_name": "Jane",
                 "bio": "Experienced developer",
                 "role": "AUTHENTICATED",
                 "last_name": "Doe",
-                "profile_picture_url": "https://example.com/profiles/john.jpg",
-                "linkedin_profile_url": "https://linkedin.com/in/johndoe",
-                "github_profile_url": "https://github.com/johndoe",
+                "profile_picture_url": "https://example.com/profiles/jane.jpg",
+                "linkedin_profile_url": "https://linkedin.com/in/janedoe",
+                "github_profile_url": "https://github.com/janedoe",
             }
         ],
     )
