@@ -33,9 +33,11 @@ from app.services.jwt_service import create_access_token
 from app.utils.link_generation import create_user_links, generate_pagination_links
 from app.dependencies import get_settings
 from app.services.email_service import EmailService
+
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 settings = get_settings()
+
 @router.get("/users/{user_id}", response_model=UserResponse, name="get_user", tags=["User Management Requires (Admin or Manager Roles)"])
 async def get_user(user_id: UUID, request: Request, db: AsyncSession = Depends(get_db), token: str = Depends(oauth2_scheme), current_user: dict = Depends(require_role(["ADMIN", "MANAGER"]))):
     """
@@ -87,6 +89,10 @@ async def update_user(user_id: UUID, user_update: UserUpdate, request: Request, 
     - **user_update**: UserUpdate model with updated user information.
     """
     user_data = user_update.model_dump(exclude_unset=True)
+    if "nickname" in user_data:
+        existing_user = await UserService.get_by_nickname(db, user_data["nickname"])
+        if existing_user and existing_user.id != user_id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Nickname already in use")
     updated_user = await UserService.update(db, user_id, user_data)
     if not updated_user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
@@ -142,7 +148,10 @@ async def create_user(user: UserCreate, request: Request, db: AsyncSession = Dep
     existing_user = await UserService.get_by_email(db, user.email)
     if existing_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already exists")
-    
+    if user.nickname:
+        existing_nickname = await UserService.get_by_nickname(db, user.nickname)
+        if existing_nickname:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Nickname already in use")
     created_user = await UserService.create(db, user.model_dump(), email_service)
     if not created_user:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create user")
